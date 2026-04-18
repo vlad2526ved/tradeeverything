@@ -1,0 +1,196 @@
+<html>
+	<head>
+		<style>
+			body{
+				background-color: #111;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				font-family: 'Poppins', sans-serif;
+			}
+			.container{
+				height: 320px;
+				width: 230px;
+				background: linear-gradient(145deg, #1a1a1a, #222);
+				border: 1px solid yellow;
+				border-radius: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;
+				box-shadow: 0 0 20px rgba(255,255,0,0.2);
+			}
+
+			h3{
+				color: yellow;
+				font-size: 22px;
+				margin: 5px;
+				position: relative;
+			}
+
+			/* 🔥 GLITCH EFFECT */
+			h3::before, h3::after{
+				content: attr(data-text);
+				position: absolute;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			h3::before{
+				color: red;
+				animation: glitchTop 0.8s infinite;
+			}
+			h3::after{
+				color: pink;
+				animation: glitchBottom 0.8s infinite;
+			}
+			@keyframes glitchTop{
+				0%{ clip-path: inset(0 0 80% 0); transform: translate(-2px, -2px); }
+				50%{ clip-path: inset(0 0 40% 0); transform: translate(2px, 2px); }
+				100%{ clip-path: inset(0 0 80% 0); transform: translate(-2px, -2px); }
+			}
+			@keyframes glitchBottom{
+				0%{ clip-path: inset(80% 0 0 0); transform: translate(2px, 2px); }
+				50%{ clip-path: inset(40% 0 0 0); transform: translate(-2px, -2px); }
+				100%{ clip-path: inset(80% 0 0 0); transform: translate(2px, 2px); }
+			}
+
+			h4{
+				color: #aaa;
+				font-size: 12px;
+				margin: 5px;
+			}
+
+			.circle{
+				margin: 10px auto;
+				width: 45px;
+				height: 45px;
+				border: 5px solid rgba(255, 255, 0, 0.15);
+				border-top-color: yellow;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin{
+				100%{ transform: rotate(360deg); }
+			}
+
+			.check{
+				display: none;
+				font-size: 40px;
+				color: lime;
+			}
+
+			#percent{
+				color: yellow;
+				font-size: 20px;
+			}
+
+			.bar-container{
+				width: 80%;
+				height: 8px;
+				background-color: #333;
+				border-radius: 5px;
+				margin-top: 10px;
+				overflow: hidden;
+			}
+			.bar{
+				height: 100%;
+				width: 0%;
+				background: linear-gradient(90deg, yellow, orange);
+				transition: width 0.4s ease; /* 🔥 AJOUT IMPORTANT */
+			}
+
+			#status{
+				color: #ccc;
+				font-size: 12px;
+				margin-top: 10px;
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<h3 id="loadingText" data-text="Loading">Loading</h3>
+			<h4>INSTALLATION</h4>
+
+			<div class="circle" id="loader"></div>
+			<div class="check" id="check">✔</div>
+
+			<div id="percent">0%</div>
+
+			<div class="bar-container">
+				<div class="bar" id="bar"></div>
+			</div>
+
+			<div id="status">Initialisation...</div>
+		</div>
+
+		<script>
+			let percent = 0;
+			let element = document.getElementById("percent");
+			let bar = document.getElementById("bar");
+			let status = document.getElementById("status");
+			let loader = document.getElementById("loader");
+			let check = document.getElementById("check");
+			let loadingText = document.getElementById("loadingText");
+
+			let dots = 0;
+
+			const messages = [
+				"Initialisation...",
+				"Connexion au serveur...",
+				"Téléchargement...",
+				"Installation...",
+				"Optimisation...",
+				"Finalisation..."
+			];
+
+			function animateDots(){
+				if(percent >= 100) return;
+				dots = (dots + 1) % 4;
+				let text = "Loading" + ".".repeat(dots);
+				loadingText.innerText = text;
+				loadingText.setAttribute("data-text", text);
+				setTimeout(animateDots, 500);
+			}
+
+			function updateLoading() {
+				if (percent >= 100) {
+					element.innerText = "100%";
+					bar.style.width = "100%";
+					status.innerText = "Installation terminée";
+					loadingText.innerText = "Completed";
+
+					loader.style.display = "none";
+					check.style.display = "block";
+
+					// 🔥 REDIRECTION
+					setTimeout(() => {
+						window.location.href = "Pagetrade.html";
+					}, 1500);
+
+					return;
+				}
+
+				let increment = Math.floor(Math.random() * 8) + 1;
+				percent += increment;
+				if (percent > 100) percent = 100;
+
+				element.innerText = percent + "%";
+				bar.style.width = percent + "%";
+
+				let index = Math.floor((percent / 100) * messages.length);
+				status.innerText = messages[index];
+
+				let delay = Math.random() * 600 + 300;
+
+				setTimeout(updateLoading, delay);
+			}
+
+			updateLoading();
+			animateDots();
+		</script>
+	</body>
+</html>

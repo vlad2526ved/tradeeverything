@@ -1,0 +1,578 @@
+<html>
+	<head>
+<style>
+.signal {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.buy { background: rgba(0,255,136,0.2); color: #00ff88; }
+.sell { background: rgba(255,0,0,0.2); color: #ff4d4d; }
+.hold { background: rgba(255,255,255,0.1); color: #ccc; }
+</style>		
+
+<style>
+			body{
+				background-color: #111;
+				color: white;
+				font-family: 'Poppins', sans-serif;
+				margin: 0;
+			}
+
+			#app{
+				padding: 20px;
+				text-align: center;
+			}
+
+			h2{
+				font-size: 32px;
+				color: yellow;
+				margin-top: 20px;
+				position: relative;
+			}
+
+			h2::after{
+				content: "";
+				display: block;
+				width: 120px;
+				height: 3px;
+				background: linear-gradient(90deg, yellow, orange);
+				margin: 10px auto 0;
+				border-radius: 2px;
+			}
+
+			/* 🔥 CONTENEUR DES BOITES */
+			.box-container{
+				display: flex;
+				justify-content: center;
+				gap: 20px;
+				margin-top: 50px;
+				flex-wrap: wrap;
+			}
+
+			/* 🔥 BOITES */
+			.box{
+				width: 180px;
+				height: 120px;
+				background: linear-gradient(145deg, #1a1a1a, #222);
+				border: 1px solid yellow;
+				border-radius: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				transition: 0.3s;
+				box-shadow: 0 0 15px rgba(255,255,0,0.2);
+			}
+
+			.box:hover{
+				transform: scale(1.05);
+				box-shadow: 0 0 25px rgba(255,255,0,0.5);
+			}
+
+			.box p{
+				color: yellow;
+				font-size: 14px;
+				text-align: center;
+				padding: 10px;
+			}
+			.wallet-btn{
+				padding: 12px 25px;
+				background: linear-gradient(90deg, yellow, orange);
+				border: none;
+				border-radius: 10px;
+				font-weight: bold;
+				cursor: pointer;
+				transition: 0.3s;
+			}
+
+			.wallet-btn:hover{
+				transform: scale(1.1);
+				box-shadow: 0 0 15px rgba(255,255,0,0.5);
+			}
+.ai-panel{
+  width: 90%;
+  max-width: 900px;
+  margin: 50px auto 30px;
+  background: linear-gradient(145deg, #121212, #1b1b1b);
+  border: 1px solid rgba(255,215,0,0.18);
+  border-radius: 18px;
+  box-shadow: 0 0 24px rgba(255,215,0,0.08);
+  overflow: hidden;
+}
+
+.ai-header{
+  padding: 18px 20px;
+  background: rgba(255,215,0,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.ai-header h3{
+  margin: 0;
+  color: yellow;
+  font-size: 24px;
+}
+
+.ai-header p{
+  margin: 8px 0 0;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.ai-messages{
+  height: 320px;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0,0,0,0.15);
+}
+
+.chat-bubble{
+  max-width: 78%;
+  white-space: pre-line;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  line-height: 1.5;
+  box-shadow: 0 0 12px rgba(255,255,255,0.04);
+}
+
+.chat-bubble.ai{
+  align-self: flex-start;
+  background: #1c1c1c;
+  border: 1px solid rgba(255,215,0,0.15);
+  color: white;
+}
+
+.chat-bubble.user{
+  align-self: flex-end;
+  background: #2a2a2a;
+  border: 1px solid rgba(0,255,136,0.18);
+  color: white;
+}
+
+.ai-input-row{
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: #111;
+}
+
+.ai-input{
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: white;
+  font-size: 14px;
+}
+
+.ai-input:focus{
+  outline: none;
+  border-color: rgba(255,215,0,0.35);
+  box-shadow: 0 0 10px rgba(255,215,0,0.12);
+}
+
+.ai-send-btn{
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, yellow, orange);
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.ai-send-btn:hover{
+  transform: scale(1.05);
+  box-shadow: 0 0 14px rgba(255,215,0,0.28);
+}
+
+.quick-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 16px 16px;
+  background: #111;
+}
+
+.quick-btn{
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1a1a1a;
+  color: #ddd;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.quick-btn:hover{
+  border-color: rgba(255,215,0,0.28);
+  color: yellow;
+}
+
+.ai-summary-panel{
+  width: 90%;
+  max-width: 1000px;
+  margin: 40px auto 20px;
+  background: linear-gradient(145deg, #121212, #1b1b1b);
+  border: 1px solid rgba(255,215,0,0.18);
+  border-radius: 18px;
+  box-shadow: 0 0 24px rgba(255,215,0,0.08);
+  padding: 20px;
+}
+
+.ai-summary-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ai-summary-header h3{
+  margin: 0;
+  color: yellow;
+  font-size: 24px;
+}
+
+.ai-summary-header p{
+  margin: 8px 0 0;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.summary-stats-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.summary-stat-card{
+  background: #151515;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: left;
+}
+
+.summary-stat-label{
+  color: #aaa;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.summary-stat-value{
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.summary-mini-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.summary-mini-card{
+  background: #171717;
+  border: 1px solid rgba(0,255,136,0.18);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: left;
+}
+
+.summary-mini-card.danger{
+  border: 1px solid rgba(255,77,77,0.18);
+}
+
+.summary-mini-label{
+  color: #bbb;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.summary-mini-value{
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.summary-mini-text{
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.holdings-ai-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+}
+
+.holding-ai-card{
+  background: linear-gradient(145deg, #151515, #101010);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: left;
+  box-shadow: 0 0 14px rgba(255,255,255,0.03);
+}
+
+.holding-ai-top{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.holding-ai-title{
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.holding-ai-subtitle{
+  color: #aaa;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.holding-ai-metrics{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #ddd;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.holding-ai-comment{
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.holding-ai-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.signal-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid rgba(255,255,255,0.08);
+  white-space: nowrap;
+}
+
+.signal-dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.signal-buy{
+  color: #00ff88;
+  background: rgba(0,255,136,0.10);
+  border-color: rgba(0,255,136,0.22);
+}
+.signal-buy .signal-dot{
+  background: #00ff88;
+}
+
+.signal-sell{
+  color: #ff6b6b;
+  background: rgba(255,107,107,0.10);
+  border-color: rgba(255,107,107,0.22);
+}
+.signal-sell .signal-dot{
+  background: #ff6b6b;
+}
+
+.signal-watch-buy{
+  color: #ffd166;
+  background: rgba(255,209,102,0.10);
+  border-color: rgba(255,209,102,0.22);
+}
+.signal-watch-buy .signal-dot{
+  background: #ffd166;
+}
+
+.signal-watch-sell{
+  color: orange;
+  background: rgba(255,165,0,0.10);
+  border-color: rgba(255,165,0,0.22);
+}
+.signal-watch-sell .signal-dot{
+  background: orange;
+}
+
+.signal-wait{
+  color: deepskyblue;
+  background: rgba(0,191,255,0.10);
+  border-color: rgba(0,191,255,0.22);
+}
+.signal-wait .signal-dot{
+  background: deepskyblue;
+}
+
+.signal-nothing{
+  color: #bbb;
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+}
+.signal-nothing .signal-dot{
+  background: #bbb;
+}
+
+.signal-neutral{
+  color: white;
+}
+.signal-neutral .signal-dot{
+  background: white;
+}
+
+.ai-empty{
+  color: #bbb;
+  background: #151515;
+  border: 1px dashed rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+@media (max-width: 700px){
+  .ai-summary-header{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .holding-ai-top{
+    flex-direction: column;
+  }
+}
+
+.source-badge{
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.source-web{
+  color: #8fd3ff;
+  background: rgba(80,170,255,0.12);
+  border: 1px solid rgba(80,170,255,0.25);
+}
+
+.source-local{
+  color: #ffd166;
+  background: rgba(255,209,102,0.12);
+  border: 1px solid rgba(255,209,102,0.25);
+}
+
+.source-ai{
+  color: #c9b6ff;
+  background: rgba(170,120,255,0.12);
+  border: 1px solid rgba(170,120,255,0.25);
+}
+
+		</style>
+	</head>
+
+	<body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+		<div id="app">
+			<h2>TradeEverything</h2>
+
+			<div class="box-container">
+				
+				<!-- 🔥 BOITE 1 -->
+				<div class="box" onclick="goToCompanies()">
+					<p>Entreprises connues</p>
+				</div>
+
+				<!-- 🔥 BOITE 2 -->
+				<div class="box" onclick="goToPortfolio()">
+					<p>Mes actions</p>
+				</div>
+				<div style="margin-top:40px;">
+					<button onclick="goToWallet()" class="wallet-btn">
+						💰 Mon portefeuille
+					</button>
+				</div>
+
+			</div>
+		</div>
+<div id="aiHomeSummary" class="ai-summary-panel"></div>
+
+<div class="ai-panel">
+  <div class="ai-header">
+    <h3>🤖 Assistant boursier</h3>
+    <p>Je peux analyser ton portefeuille, tes actions et te proposer un avis argumenté.</p>
+  </div>
+
+  <div id="aiMessages" class="ai-messages"></div>
+
+  <div class="quick-actions">
+    <button class="quick-btn" onclick="fillAiPrompt('Analyse mon portefeuille')">Analyse mon portefeuille</button>
+    <button class="quick-btn" onclick="fillAiPrompt('Que dois-je acheter ?')">Que dois-je acheter ?</button>
+    <button class="quick-btn" onclick="fillAiPrompt('Quelle action est la plus risquée ?')">Action la plus risquée</button>
+    <button class="quick-btn" onclick="fillAiPrompt('Que penses-tu de Apple ?')">Analyse Apple</button>
+    <button class="quick-btn" onclick="fillAiPrompt('Que penses-tu de Tesla ?')">Analyse Tesla</button>
+  </div>
+
+  <div class="ai-input-row">
+    <input id="aiInput" class="ai-input" type="text" placeholder="Pose une question à ton IA..." />
+    <button class="ai-send-btn" onclick="sendAiMessage()">Envoyer</button>
+  </div>
+</div>
+
+		<script>
+			function goToCompanies(){
+				window.location.href = "companies.html";
+			}
+
+			function goToPortfolio(){
+				window.location.href = "portfolio.html";
+			}
+			function goToWallet(){
+				window.location.href = "wallet.html";
+			}
+		</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="portfolio-storage.js"></script>
+<script src="company-data.js"></script>
+<script src="ai-backend-engine.js"></script>
+<script src="ai-chat.js"></script>
+
+<script>
+  initAiChat();
+</script>
+
+	</body>
+</html>

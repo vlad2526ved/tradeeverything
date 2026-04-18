@@ -1,0 +1,251 @@
+<html>
+	<head>
+		<style>
+			body{
+				background: radial-gradient(circle at top, #1a1a1a, #000);
+				color: white;
+				font-family: 'Poppins', sans-serif;
+				margin: 0;
+				text-align: center;
+			}
+
+			h2{
+				color: yellow;
+				margin-top: 20px;
+			}
+
+			.card{
+				margin: 40px auto;
+				padding: 20px;
+				width: 500px;
+				background: #111;
+				border-radius: 15px;
+				box-shadow: 0 0 20px rgba(255,255,0,0.2);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.info{
+				text-align: left;
+			}
+
+			.money{
+				font-size: 28px;
+				margin: 10px 0;
+			}
+
+			.cash{ color: #00bfff; }
+			.total{ color: #00ff88; font-weight: bold; }
+
+			.gain{ font-size: 18px; }
+			.positive{ color: #00ff88; }
+			.negative{ color: #ff4d4d; }
+
+			canvas{
+				width: 200px !important;
+				height: 200px !important;
+			}
+
+			#performanceChart{
+				height: 400px !important;
+				width: 90% !important;
+				margin: 40px auto;
+				background: #0a0a0a;
+				border-radius: 15px;
+				padding: 15px;
+				box-shadow: 0 0 25px rgba(0,255,136,0.15);
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<h2>💰 Mon portefeuille</h2>
+
+<div style="width:90%; margin:20px auto 0; text-align:left;">
+  <button onclick="window.location.href='Pagetrade.html'" style="
+    padding:10px 18px;
+    border:1px solid rgba(255,215,0,0.25);
+    background:linear-gradient(145deg,#171717,#101010);
+    color:#ffd700;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:bold;
+  ">
+    ← Retour à l'accueil
+  </button>
+</div>		
+
+<div class="card">
+			<div class="info">
+				<div>Cash disponible</div>
+				<div class="money cash" id="cash">10 000 $</div>
+
+				<div>Valeur portefeuille</div>
+				<div class="money total" id="total">10 000 $</div>
+
+				<div>Gain / Perte</div>
+				<div class="gain positive" id="profit">0 $ (0%)</div>
+			</div>
+
+			<canvas id="portfolioChart"></canvas>
+		</div>
+
+		<!-- ✅ ICI (BON ENDROIT) -->
+		<div id="stats">
+			<div id="changeLive">Variation (live): 0 $</div>
+			<div id="changeDay">Variation (jour): 0 $</div>
+		</div>
+
+		<canvas id="performanceChart"></canvas>
+
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+		<script src="portfolio-storage.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="portfolio-storage.js"></script>
+
+<script>
+  const baseMoney = 10000;
+
+  let history = [];
+  let labels = [];
+
+  let totalElement = document.getElementById("total");
+  let profitElement = document.getElementById("profit");
+  let liveElement = document.getElementById("changeLive");
+  let dayElement = document.getElementById("changeDay");
+  let cashElement = document.getElementById("cash");
+
+  const portfolio = getPortfolio();
+  const cash = portfolio.cash;
+  const investedValue = getInvestedValue();
+  const totalValue = getPortfolioValue();
+  const globalProfit = totalValue - baseMoney;
+
+  cashElement.innerText = cash.toFixed(2) + " $";
+  totalElement.innerText = totalValue.toFixed(2) + " $";
+
+  const globalPercent = ((globalProfit / baseMoney) * 100).toFixed(2);
+  profitElement.innerText = `${globalProfit.toFixed(2)} $ (${globalPercent}%)`;
+
+  if (globalProfit >= 0) {
+    profitElement.className = "gain positive";
+  } else {
+    profitElement.className = "gain negative";
+  }
+
+  liveElement.innerText = "Variation (live): " + globalProfit.toFixed(2) + " $";
+  dayElement.innerText = "Variation (jour): " + globalProfit.toFixed(2) + " $";
+
+  let chart = new Chart(document.getElementById('portfolioChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Cash', 'Investi'],
+      datasets: [{
+        data: [cash, investedValue],
+        backgroundColor: ['#00bfff', '#00ff88']
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          color: "white",
+          formatter: (v, c) => {
+            let total = c.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            return total ? ((v / total) * 100).toFixed(1) + "%" : "0%";
+          }
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+
+  history.push(baseMoney);
+  history.push(totalValue);
+
+  labels.push("Départ");
+  labels.push("Maintenant");
+
+  let performanceChart = new Chart(document.getElementById('performanceChart'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: history,
+          borderColor: '#00ff88',
+          borderWidth: 3,
+          pointRadius: 4,
+          tension: 0.4,
+          fill: false
+        },
+        {
+          data: history.map(v => v >= baseMoney ? v : baseMoney),
+          borderWidth: 0,
+          pointRadius: 0,
+          fill: '-1',
+          backgroundColor: 'rgba(0,255,136,0.2)'
+        },
+        {
+          data: history.map(v => v < baseMoney ? v : baseMoney),
+          borderWidth: 0,
+          pointRadius: 0,
+          fill: '-1',
+          backgroundColor: 'rgba(255,77,77,0.2)'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          grid: { color: "rgba(255,255,255,0.05)" },
+          ticks: { color: "#aaa" }
+        },
+        y: {
+          grid: { color: "rgba(255,255,255,0.08)" },
+          ticks: {
+            color: "#aaa",
+            callback: function(value) {
+              return value + " $";
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    },
+    plugins: [
+      {
+        id: 'baseline',
+        afterDraw(chart) {
+          let yScale = chart.scales.y;
+          let ctx = chart.ctx;
+          let y = yScale.getPixelForValue(baseMoney);
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(chart.chartArea.left, y);
+          ctx.lineTo(chart.chartArea.right, y);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "#ffffff55";
+          ctx.setLineDash([5, 5]);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+    ]
+  });
+</script>
+
+	</body>
+</html>
