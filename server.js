@@ -24,7 +24,14 @@ const COMPANY_SYMBOLS = {
   apple: "AAPL", amazon: "AMZN", google: "GOOGL", alphabet: "GOOGL",
   meta: "META", facebook: "META", nvidia: "NVDA", tesla: "TSLA",
   microsoft: "MSFT", aapl: "AAPL", amzn: "AMZN", googl: "GOOGL",
-  nvda: "NVDA", tsla: "TSLA", msft: "MSFT"
+  nvda: "NVDA", tsla: "TSLA", msft: "MSFT",
+  netflix: "NFLX", nflx: "NFLX", disney: "DIS", dis: "DIS",
+  visa: "V", v: "V", mastercard: "MA", ma: "MA",
+  coca: "KO", ko: "KO", coke: "KO", pepsi: "PEP", pep: "PEP",
+  mcdonald: "MCD", mcd: "MCD", nike: "NKE", nke: "NKE",
+  intel: "INTC", intc: "INTC", amd: "AMD", qualcomm: "QCOM", qcom: "QCOM",
+  salesforce: "CRM", crm: "CRM", oracle: "ORCL", orcl: "ORCL",
+  ibm: "IBM", broadcom: "AVGO", avgo: "AVGO"
 };
 
 function normalizeText(text) {
