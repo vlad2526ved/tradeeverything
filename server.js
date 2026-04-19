@@ -5,7 +5,9 @@ const { answerQuestion } = require("./ai-backend-engine");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY || "";
+// Clé Anthropic optionnelle - si absente, on utilise seulement l'IA locale
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
+const USE_ANTHROPIC = !!ANTHROPIC_API_KEY;
 
 app.use(cors());
 app.use(express.json());
@@ -122,9 +124,11 @@ async function getNews(symbol) {
   }));
 }
 
-// ─── Anthropic IA ─────────────────────────────────────────────────────────────
+// ─── Anthropic IA (optionnel) ─────────────────────────────────────────────────
 async function askAnthropic(userMessage, stockContext = null, memoryContext = null) {
-  if (!ANTHROPIC_API_KEY) throw new Error("Clé Anthropic manquante.");
+  if (!USE_ANTHROPIC) {
+    throw new Error("Anthropic non disponible");
+  }
 
   const systemPrompt = `Tu es TradeAI, un assistant boursier expert et personnalisé intégré dans l'application TradeEverything.
 Tu réponds toujours en français, de façon claire, directe et pédagogique.
@@ -180,44 +184,25 @@ app.post("/ask-ai", async (req, res) => {
 
     const memoryContext = buildMemoryContext();
 
-    // ─── IA LOCALE EN PRIORITÉ ────────────────────────────────────────────────
-    // Si un portfolio est fourni, on utilise l'IA locale qui connaît les holdings
-    if (portfolio && typeof portfolio.holdings === "object") {
-      try {
-        const companyData = {};
-        for (const [sym, name] of Object.entries(COMPANY_SYMBOLS)) {
-          if (!companyData[name] && sym === name.toLowerCase()) {
-            try {
-              const quote = await getQuote(name);
-              companyData[name] = {
-                name: name.toUpperCase(),
-                symbol: name,
-                stock: {
-                  currentPrice: quote.price,
-                  changeValue: quote.change,
-                  changePercent: quote.changePercent,
-                  dayHigh: quote.price * 1.02,
-                  dayLow: quote.price * 0.98,
-                  volume: quote.volume,
-                  pe: 25,
-                  eps: 5,
-                  marketCap: 1_000_000_000_000
-                }
-              };
-            } catch {}
-          }
-        }
-        const answer = await answerQuestion(message, portfolio, companyData);
-        if (answer && !answer.includes("Je n'ai pas trouvé")) {
-          return res.json({ ok: true, source: "knowledge_base", answer });
-        }
-      } catch (err) {
-        console.log("IA locale échouée, fallback Anthropic:", err.message);
+    // ─── IA LOCALE EN PRIORITÉ (fonctionne sans clé API) ──────────────────────
+    // L'IA locale peut répondre aux questions sur le portefeuille, glossaire, etc.
+    try {
+      const companyData = {};
+      // Récupère les données des entreprises depuis company-data.js
+      const localCompanyData = require("./company-data");
+      for (const symbol of Object.keys(localCompanyData)) {
+        companyData[symbol] = localCompanyData[symbol];
       }
+      const answer = await answerQuestion(message, portfolio, companyData);
+      if (answer && !answer.includes("Je n'ai pas trouvé")) {
+        return res.json({ ok: true, source: "knowledge_base", answer });
+      }
+    } catch (err) {
+      console.log("IA locale échouée:", err.message);
     }
 
-    // ─── FALLBACK ANTHROPIC ───────────────────────────────────────────────────
-    if (symbol) {
+    // ─── FALLBACK ANTHROPIC (seulement si clé présente) ───────────────────────
+    if (USE_ANTHROPIC && symbol) {
       try {
         const [quote, sma, news] = await Promise.all([
           getQuote(symbol),
@@ -242,8 +227,14 @@ News: ${news.map(n => `${n.title} (${n.sentimentLabel})`).join(" | ")}
       }
     }
 
-    const answer = await askAnthropic(message, null, memoryContext);
-    return res.json({ ok: true, source: "ai_generated", answer });
+    // Pas de clé Anthropic = on retourne une réponse par défaut
+    if (!USE_ANTHROPIC) {
+      return res.json({
+        ok: true,
+        source: "knowledge_base",
+        answer: "Je peux analyser votre portefeuille et répondre à des questions sur les actions que vous possédez. Posez-moi une question précise sur une entreprise (Apple, Tesla, etc.) ou demandez-moi d'analyser votre portefeuille."
+      });
+    }
 
   } catch (error) {
     console.error("Erreur /ask-ai :", error);
