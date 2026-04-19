@@ -298,15 +298,87 @@
 			</tr>
 		</table>
 
+		<script src="company-data.js"></script>
 		<script>
-			function goToApple(){ window.location.href = "apple.html"; }
-			function goToAmazon(){ window.location.href = "amazon.html"; }
-			function goToGoogle(){ window.location.href = "google.html"; }
-			function goToFacebook(){ window.location.href = "facebook.html"; }
-			function goToMeta(){ window.location.href = "meta.html"; }
-			function goToNvidia(){ window.location.href = "nvidia.html"; }
-			function goToTesla(){ window.location.href = "tesla.html"; }
-			function goToMicrosoft(){ window.location.href = "microsoft.html"; }
+			// Fonctions de navigation pour chaque entreprise
+			function goToCompany(symbol) {
+				const pages = {
+					AAPL: "apple.html", AMZN: "amazon.html", GOOGL: "google.html",
+					META: "meta.html", NVDA: "nvidia.html", TSLA: "tesla.html",
+					MSFT: "microsoft.html", NFLX: "netflix.html", DIS: "disney.html",
+					V: "visa.html", MA: "mastercard.html", KO: "coca-cola.html",
+					PEP: "pepsico.html", MCD: "mcdonalds.html", NKE: "nike.html",
+					INTC: "intel.html", AMD: "amd.html", QCOM: "qualcomm.html",
+					CRM: "salesforce.html", ORCL: "oracle.html", IBM: "ibm.html",
+					AVGO: "broadcom.html"
+				};
+				window.location.href = pages[symbol];
+			}
+
+			// Générer le tableau dynamiquement depuis COMPANY_DATA
+			function renderCompaniesTable() {
+				const table = document.querySelector("table");
+				if (!table || !window.COMPANY_DATA) return;
+
+				const headerRow = table.querySelector("tr");
+
+				let rowsHtml = "";
+				for (const [symbol, company] of Object.entries(window.COMPANY_DATA)) {
+					const stock = company.stock;
+					const changeClass = stock.changePercent >= 0 ? "positive" : "negative";
+					const changeSign = stock.changePercent >= 0 ? "+" : "";
+					const trendLabel = stock.changePercent >= 0 ? "Haussière 📈" : "Baissière 📉";
+					const marketCap = formatMarketCap(stock.marketCap);
+					const volume = formatVolume(stock.volume);
+
+					rowsHtml += `
+						<tr onclick="goToCompany('${symbol}')" style="cursor:pointer;">
+							<td>
+								<div class="company-cell">
+									<div style="text-align:left;">
+										<div class="company-name">${company.emoji} ${company.name}</div>
+										<div class="company-symbol">${symbol}</div>
+									</div>
+								</div>
+							</td>
+							<td><span class="section-badge">${company.business.sector}</span></td>
+							<td>${stock.currentPrice.toFixed(2)} $</td>
+							<td class="${changeClass}">${changeSign}${stock.changePercent.toFixed(2)}%</td>
+							<td>${marketCap}</td>
+							<td>${stock.pe.toFixed(2)}</td>
+							<td>${stock.eps.toFixed(2)} $</td>
+							<td>0%</td>
+							<td>1.00</td>
+							<td>${volume}</td>
+							<td class="${changeClass}">${trendLabel}</td>
+						</tr>
+					`;
+				}
+
+				headerRow.insertAdjacentHTML("afterend", rowsHtml);
+			}
+
+			function formatMarketCap(value) {
+				if (value >= 1_000_000_000_000) return (value / 1_000_000_000_000).toFixed(2) + "T $";
+				if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(2) + "B $";
+				return (value / 1_000_000).toFixed(2) + "M $";
+			}
+
+			function formatVolume(value) {
+				if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(0) + "B";
+				if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + "M";
+				return value.toFixed(0);
+			}
+
+			// Supprimer les anciennes lignes statiques (sauf l'en-tête)
+			document.addEventListener("DOMContentLoaded", function() {
+				const table = document.querySelector("table");
+				const rows = table.querySelectorAll("tr");
+				for (let i = 1; i < rows.length; i++) {
+					rows[i].remove();
+				}
+				renderCompaniesTable();
+			});
 		</script>
 	</body>
 <div style="width:95%; margin:20px auto 0; text-align:left;">

@@ -1,0 +1,593 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Disney</title>
+    <style>
+      body{
+        background: radial-gradient(circle at top, #1a1a1a, #000);
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        text-align: center;
+      }
+
+      .topbar{
+        width: 90%;
+        max-width: 1150px;
+        margin: 20px auto 0;
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .back-btn{
+        padding: 10px 18px;
+        border: 1px solid rgba(255,215,0,0.25);
+        background: linear-gradient(145deg, #171717, #101010);
+        color: #ffd700;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.25s;
+        box-shadow: 0 0 14px rgba(255,215,0,0.08);
+      }
+
+      .back-btn:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 0 18px rgba(255,215,0,0.18);
+      }
+
+      h2{
+        color: yellow;
+        margin-top: 20px;
+        font-size: 32px;
+        letter-spacing: 1px;
+        text-shadow: 0 0 10px rgba(255,255,0,0.5);
+      }
+
+      .main-card{
+        width: 90%;
+        max-width: 1150px;
+        margin: 20px auto 40px;
+        padding: 20px;
+        background: linear-gradient(145deg, #111, #1c1c1c);
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,0,0.2);
+        box-shadow: 0 0 30px rgba(255,255,0,0.15);
+      }
+
+      .price-box{
+        font-size: 36px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .change{
+        font-size: 18px;
+        margin-top: 5px;
+      }
+
+      .positive{
+        color: #00ff88;
+        text-shadow: 0 0 10px rgba(0,255,136,0.5);
+      }
+
+      .negative{
+        color: #ff4d4d;
+        text-shadow: 0 0 10px rgba(255,77,77,0.5);
+      }
+
+      .chart-container{
+        margin-top: 25px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      }
+
+      .actions{
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .btn{
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .buy{
+        background: #00ff88;
+        color: black;
+      }
+
+      .sell{
+        background: #ff4d4d;
+        color: white;
+      }
+
+      .btn:hover{
+        transform: scale(1.08);
+        box-shadow: 0 0 15px rgba(255,255,255,0.3);
+      }
+
+      .section-title{
+        color: yellow;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+
+      .metrics-grid{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .metric-card{
+        background: #151515;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 0 15px rgba(255,255,255,0.03);
+      }
+
+      .metric-label{
+        color: #aaa;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .metric-value{
+        font-size: 22px;
+        font-weight: bold;
+        color: white;
+      }
+
+      .info-grid{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 24px;
+      }
+
+      .info-card{
+        background: #141414;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 18px;
+        text-align: left;
+      }
+
+      .info-card h3{
+        margin-top: 0;
+        color: #ffd700;
+      }
+
+      .info-card p{
+        color: #ddd;
+        line-height: 1.5;
+      }
+
+      .charts-grid{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .chart-card{
+        background: #141414;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 20px;
+      }
+
+      .range-box{
+        margin-top: 10px;
+      }
+
+      .range-labels{
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #bbb;
+        margin-bottom: 8px;
+      }
+
+      .range-bar{
+        position: relative;
+        height: 12px;
+        background: #2a2a2a;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .range-fill{
+        height: 100%;
+        background: linear-gradient(90deg, #ff4d4d, #ffd700, #00ff88);
+        border-radius: 20px;
+      }
+
+      .range-marker{
+        position: absolute;
+        top: -3px;
+        width: 14px;
+        height: 18px;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.4);
+      }
+
+      .range-current{
+        margin-top: 10px;
+        color: #ddd;
+        font-size: 14px;
+      }
+
+      canvas{
+        max-width: 100%;
+      }
+
+      .analysis-hero{
+        display: grid;
+        grid-template-columns: 1.8fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+        margin-bottom: 22px;
+        align-items: stretch;
+      }
+
+      .analysis-hero-left,
+      .analysis-hero-right,
+      .analysis-footer-card,
+      .score-card{
+        background: linear-gradient(145deg, #141414, #101010);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        box-shadow: 0 0 18px rgba(255,255,255,0.04);
+      }
+
+      .analysis-hero-left{
+        padding: 22px;
+        text-align: left;
+      }
+
+      .analysis-kicker{
+        display: inline-block;
+        font-size: 12px;
+        color: #ffe082;
+        background: rgba(255,215,0,0.08);
+        border: 1px solid rgba(255,215,0,0.18);
+        padding: 6px 10px;
+        border-radius: 999px;
+        margin-bottom: 12px;
+        letter-spacing: 0.4px;
+      }
+
+      .analysis-title{
+        margin: 0 0 12px 0;
+        color: #ffd700;
+        font-size: 26px;
+      }
+
+      .analysis-summary{
+        margin: 0;
+        color: #d7d7d7;
+        line-height: 1.7;
+        font-size: 15px;
+      }
+
+      .analysis-hero-right{
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        justify-content: center;
+      }
+
+      .analysis-mini-card{
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(0,255,136,0.18);
+        border-radius: 16px;
+        padding: 18px;
+        text-align: left;
+      }
+
+      .analysis-mini-card.danger{
+        border: 1px solid rgba(255,77,77,0.18);
+      }
+
+      .analysis-mini-card span{
+        display: block;
+        color: #bbb;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .analysis-mini-card strong{
+        font-size: 28px;
+        color: white;
+      }
+
+      .score-grid{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 18px;
+        margin-top: 20px;
+      }
+
+      .score-card{
+        padding: 20px;
+        text-align: left;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      }
+
+      .score-card:hover{
+        transform: translateY(-4px);
+        box-shadow: 0 0 26px rgba(255,255,255,0.08);
+      }
+
+      .score-card-top{
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .score-card h3{
+        color: #ffd700;
+        margin: 0 0 8px 0;
+        font-size: 20px;
+      }
+
+      .score-badge{
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: bold;
+        border: 1px solid rgba(255,255,255,0.12);
+      }
+
+      .score-big-value{
+        font-size: 28px;
+        font-weight: 800;
+        color: white;
+        white-space: nowrap;
+      }
+
+      .score-desc{
+        color: #f0f0f0;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0 0 10px 0;
+      }
+
+      .score-explain{
+        color: #bfbfbf;
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 0 0 16px 0;
+      }
+
+      .score-progress{
+        height: 10px;
+        background: #262626;
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+      }
+
+      .score-progress-fill{
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+
+      .score-good{
+        color: #00ff88;
+      }
+
+      .score-medium{
+        color: #ffd166;
+      }
+
+      .score-bad{
+        color: #ff6b6b;
+      }
+
+      .score-badge.score-good{
+        background: rgba(0,255,136,0.10);
+        border-color: rgba(0,255,136,0.25);
+        color: #00ff88;
+      }
+
+      .score-badge.score-medium{
+        background: rgba(255,209,102,0.10);
+        border-color: rgba(255,209,102,0.25);
+        color: #ffd166;
+      }
+
+      .score-badge.score-bad{
+        background: rgba(255,107,107,0.10);
+        border-color: rgba(255,107,107,0.25);
+        color: #ff6b6b;
+      }
+
+      .score-progress-fill.score-good{
+        background: linear-gradient(90deg, #00c96b, #00ff88);
+      }
+
+      .score-progress-fill.score-medium{
+        background: linear-gradient(90deg, #ffb703, #ffd166);
+      }
+
+      .score-progress-fill.score-bad{
+        background: linear-gradient(90deg, #ff4d4d, #ff7b7b);
+      }
+
+      .analysis-footer{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .analysis-footer-card{
+        padding: 18px 20px;
+        text-align: left;
+      }
+
+      .analysis-footer-card h4{
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #ffd700;
+        font-size: 18px;
+      }
+
+      .analysis-footer-card p{
+        margin: 0;
+        color: #ccc;
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      @media (max-width: 900px){
+        .analysis-hero{
+          grid-template-columns: 1fr;
+        }
+      }
+.explain-box{
+  margin-top: 30px;
+  padding: 20px;
+  background: linear-gradient(145deg, #141414, #101010);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  box-shadow: 0 0 18px rgba(255,255,255,0.04);
+}
+
+.explain-box h3{
+  color: #ffd700;
+  margin-bottom: 20px;
+}
+
+.explain-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.explain-card{
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: left;
+}
+
+.explain-card h4{
+  color: #ffd700;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.explain-card p{
+  margin: 4px 0;
+  color: #ccc;
+  font-size: 13px;
+}
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">← Retour</button>
+    </div>
+
+    <h2 id="companyTitle"> Disney (DIS)</h2>
+
+    <div class="main-card">
+      <div class="price-box negative" id="price">112.45 $</div>
+      <div class="change negative" id="change">-1.25 $ (-1.10%)</div>
+
+      <div class="actions">
+        <button class="btn buy">ACHETER</button>
+        <button class="btn sell">VENDRE</button>
+      </div>
+
+      <div class="chart-container">
+        <div id="tradingview_chart"></div>
+      </div>
+
+      <h3 class="section-title">Données boursières détaillées</h3>
+      <div id="companyInfo"></div>
+
+      <h3 class="section-title">Diagrammes utiles</h3>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Profil du titre</h3>
+          <canvas id="radarChart"></canvas>
+        </div>
+
+<div class="explain-box">
+  <h3>Comprendre les indicateurs</h3>
+
+  <div class="explain-grid">
+    <div class="explain-card">
+      <h4>Profil du titre</h4>
+      <p>Taille : importance de l'entreprise sur le marché.</p>
+      <p>Rentabilité : capacité à générer des bénéfices.</p>
+      <p>Valorisation : si l'action est chère ou non.</p>
+      <p>Momentum : force du mouvement du prix.</p>
+      <p>Volatilité : niveau de variation du prix.</p>
+    </div>
+
+    <div class="explain-card">
+      <h4>Métriques clés</h4>
+      <p>Prix : valeur actuelle de l'action.</p>
+      <p>Ouverture : prix au début de la séance.</p>
+      <p>Plus haut/bas : extrêmes de la journée.</p>
+      <p>EPS : bénéfice par action.</p>
+      <p>Volume : nombre d'échanges effectués.</p>
+    </div>
+  </div>
+</div>
+
+        <div class="chart-card">
+          <h3>Métriques clés</h3>
+          <canvas id="barChart"></canvas>
+        </div>
+
+        <div class="chart-card" style="grid-column: 1 / -1;">
+          <h3>Structure de la séance</h3>
+          <canvas id="structureChart"></canvas>
+        </div>
+      </div>
+
+      <h3 class="section-title">Lecture du profil boursier</h3>
+      <div id="scoreDetails"></div>
+    </div>
+
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="company-data.js"></script>
+    <script src="company-page.js"></script>
+    <script>
+      function goBack() {
+        if (document.referrer && document.referrer.includes("companies.html")) {
+          history.back();
+        } else {
+          window.location.href = "companies.html";
+        }
+      }
+
+      renderCompanyPage("DIS");
+    </script>
+  </body>
+</html>
